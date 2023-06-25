@@ -4,6 +4,7 @@ import ru.rubik.app.repository.user.UserRepository
 import ru.rubik.app.request.user.UserLoginRequest
 import ru.rubik.app.request.user.UserRegisterRequest
 import ru.rubik.app.response.BaseResponse
+import ru.rubik.app.security.encode
 import ru.rubik.app.service.user.UserService
 
 class UserServiceImpl (
@@ -24,10 +25,11 @@ class UserServiceImpl (
         val user = userRepository.findByUsername(request.username)
             ?: return BaseResponse.NotFoundResponse("User with ${request.username} is not found")
 
-        if (user.password != request.password) {
+        if (user.password != encode(request.password)) {
             return BaseResponse.AuthErrorResponse("Password is not correct")
         }
         //todo -> auth
+
         return BaseResponse.SuccessResponse(user.toDto())
     }
 }

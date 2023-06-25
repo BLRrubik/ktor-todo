@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 data class User (
     val id: Long,
     val username: String,
-    val password: String
+    var password: String
 ) {
     fun toDto(): UserDto {
         return UserDto(

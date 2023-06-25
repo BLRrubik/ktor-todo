@@ -9,6 +9,7 @@ import ru.rubik.app.entity.UsersTable
 import ru.rubik.app.model.User
 import ru.rubik.app.repository.user.UserRepository
 import ru.rubik.app.request.user.UserRegisterRequest
+import ru.rubik.app.security.encode
 
 class UserRepositoryImpl: UserRepository {
     override suspend fun saveUser(request: UserRegisterRequest): User? {
@@ -17,7 +18,7 @@ class UserRepositoryImpl: UserRepository {
         dbQuery {
             statement = UsersTable.insert {
                 it[username] = request.username
-                it[password] = request.password
+                it[password] = encode(request.password)
             }
         }
 
