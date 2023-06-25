@@ -18,11 +18,11 @@ fun main(args: Array<String>): Unit =
 fun Application.module() {
     DatabaseFactory.init()
 
-    val taskRepository: TaskRepository = TaskRepositoryImpl()
-    val taskService: TaskService = TaskServiceImpl(taskRepository)
-
     val userRepository: UserRepository = UserRepositoryImpl()
     val userService: UserService = UserServiceImpl(userRepository)
+
+    val taskRepository: TaskRepository = TaskRepositoryImpl()
+    val taskService: TaskService = TaskServiceImpl(taskRepository, userRepository)
 
     configureSecurity()
     configureHTTP()

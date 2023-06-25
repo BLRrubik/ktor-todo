@@ -1,53 +1,33 @@
 package ru.rubik.app.repository.user.impl
 
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.statements.InsertStatement
-import ru.rubik.app.database.DatabaseFactory.dbQuery
+import org.jetbrains.exposed.sql.transactions.transaction
+import ru.rubik.app.entity.UserEntity
 import ru.rubik.app.entity.UsersTable
-import ru.rubik.app.model.User
 import ru.rubik.app.repository.user.UserRepository
 import ru.rubik.app.request.user.UserRegisterRequest
 import ru.rubik.app.security.encode
 
 class UserRepositoryImpl: UserRepository {
-    override suspend fun saveUser(request: UserRegisterRequest): User? {
-        var statement: InsertStatement<Number>? = null
-
-        dbQuery {
-            statement = UsersTable.insert {
-                it[username] = request.username
-                it[password] = encode(request.password)
+    override suspend fun saveUser(request: UserRegisterRequest): UserEntity {
+        return transaction {
+            UserEntity.new {
+                username = request.username
+                password = encode(request.password)
             }
         }
-
-        return rowToUser(statement?.resultedValues?.get(0))
     }
 
-    override suspend fun findById(id: Long): User? {
-        var row: ResultRow? = null
-        dbQuery {
-            row = UsersTable.select { UsersTable.id.eq(id) }.firstOrNull()
+    override suspend fun findById(id: Long): UserEntity? {
+        return transaction {
+            UserEntity.findById(id)
         }
-
-        return rowToUser(row)
     }
 
-    override suspend fun findByUsername(username: String): User? {
-        var row: ResultRow? = null
-        dbQuery {
-            row = UsersTable.select { UsersTable.username.eq(username) }.firstOrNull()
+    override suspend fun findByUsername(username: String): UserEntity? {
+        return transaction {
+            UserEntity.find {
+                UsersTable.username eq username
+            }.firstOrNull()
         }
-        return rowToUser(row)
-    }
-
-    private fun rowToUser(row: ResultRow?): User? {
-        return if (row == null) null
-        else User(
-            row[UsersTable.id],
-            row[UsersTable.username],
-            row[UsersTable.password]
-        )
     }
 }

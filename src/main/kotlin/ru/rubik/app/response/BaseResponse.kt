@@ -19,4 +19,7 @@ sealed class BaseResponse<T> (
     data class ConflictResponse<T> (
         val data: T,
     ): BaseResponse<T>(HttpStatusCode.Conflict)
+    data class InternalResponse<T> (
+        val data: T,
+    ): BaseResponse<T>(HttpStatusCode.InternalServerError)
 }

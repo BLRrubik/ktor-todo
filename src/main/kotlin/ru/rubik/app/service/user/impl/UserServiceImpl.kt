@@ -16,10 +16,9 @@ class UserServiceImpl (
             return BaseResponse.ConflictResponse("User with ${request.username} is already exists")
         }
 
-        val user = userRepository.saveUser(request)
+        userRepository.saveUser(request)
 
-        return if (user == null) BaseResponse.ConflictResponse("Error during creating user")
-        else BaseResponse.SuccessResponse(mapOf("message" to "Success registration"))
+        return BaseResponse.SuccessResponse(mapOf("message" to "Success registration"))
     }
 
     override suspend fun loginUser(request: UserLoginRequest): BaseResponse<Any> {
@@ -30,7 +29,7 @@ class UserServiceImpl (
             return BaseResponse.AuthErrorResponse("Password is not correct")
         }
 
-        val token = JwtConfig.instance.createToken(user.id)
+        val token = JwtConfig.instance.createToken(user.id.value)
 
         return BaseResponse.SuccessResponse(user.toAuthDto(token))
     }

@@ -1,6 +1,5 @@
 package ru.rubik.app.router
 
-import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
@@ -15,12 +14,17 @@ fun Application.taskRouter(taskService: TaskService) {
         authenticate {
             route("/tasks") {
                 get("") {
-                    call.respond(taskService.getTasks())
+                    call.respond(taskService.getTasks(call.principal<UserPrincipal>()!!))
                 }
                 post("") {
                     val request = call.receive<TaskCreateRequest>()
 
-                    call.respond(HttpStatusCode.OK, taskService.createTask(request) ?: "Error")
+                    call.respond(
+                        taskService.createTask(
+                            request,
+                            call.principal<UserPrincipal>()!!
+                        )
+                    )
                 }
             }
         }

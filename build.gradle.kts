@@ -44,7 +44,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
     //database
-    implementation("org.jetbrains.exposed:exposed:0.17.13")
+    implementation("org.jetbrains.exposed:exposed:0.17.10")
     implementation("com.zaxxer:HikariCP:2.7.8")
     implementation("org.flywaydb:flyway-core:5.2.4")
     implementation("org.postgresql:postgresql:42.2.27")
