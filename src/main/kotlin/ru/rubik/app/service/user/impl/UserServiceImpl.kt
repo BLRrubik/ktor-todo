@@ -4,6 +4,7 @@ import ru.rubik.app.repository.user.UserRepository
 import ru.rubik.app.request.user.UserLoginRequest
 import ru.rubik.app.request.user.UserRegisterRequest
 import ru.rubik.app.response.BaseResponse
+import ru.rubik.app.security.JwtConfig
 import ru.rubik.app.security.encode
 import ru.rubik.app.service.user.UserService
 
@@ -18,7 +19,7 @@ class UserServiceImpl (
         val user = userRepository.saveUser(request)
 
         return if (user == null) BaseResponse.ConflictResponse("Error during creating user")
-        else BaseResponse.SuccessResponse(user.toDto())
+        else BaseResponse.SuccessResponse(mapOf("message" to "Success registration"))
     }
 
     override suspend fun loginUser(request: UserLoginRequest): BaseResponse<Any> {
@@ -28,8 +29,9 @@ class UserServiceImpl (
         if (user.password != encode(request.password)) {
             return BaseResponse.AuthErrorResponse("Password is not correct")
         }
-        //todo -> auth
 
-        return BaseResponse.SuccessResponse(user.toDto())
+        val token = JwtConfig.instance.createToken(user.id)
+
+        return BaseResponse.SuccessResponse(user.toAuthDto(token))
     }
 }
